@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Jwt\JwtUser;
+use App\Jwt\JwtApp;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Authenticate
+class MustGuest
 {
     /**
      * The authentication guard factory instance.
@@ -15,7 +15,7 @@ class Authenticate
      * @var \Illuminate\Contracts\Auth\Factory
      */
     protected Auth $auth;
-    protected JwtUser $jwtUser;
+    protected JwtApp $jwtApp;
 
     /**
      * Create a new middleware instance.
@@ -23,10 +23,10 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth, JwtUser $jwtUser)
+    public function __construct(Auth $auth, JwtApp $jwtApp)
     {
         $this->auth = $auth;
-        $this->jwtUser = $jwtUser;
+        $this->jwtApp = $jwtApp;
     }
 
     /**
@@ -41,11 +41,9 @@ class Authenticate
     {
         $header = $request->header('Authorization');
         $auth = $this->auth->guard($guard);
-        if (!$this->jwtUser->checkToken($this->jwtUser->parseToken($header), false)) {
+        if (!$this->jwtApp->checkToken($this->jwtApp->parseToken($header), false)) {
             throw new HttpException(401, 'Unauthorized.');
         }
-        $user = $this->jwtUser->getUser();
-        if ($user) $auth->setUser($user);
 
         return $next($request);
     }

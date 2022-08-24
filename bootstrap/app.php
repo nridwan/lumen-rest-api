@@ -23,7 +23,7 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+$app->withFacades();
 
 $app->withEloquent();
 
@@ -76,9 +76,14 @@ $app->configure('app');
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'auth-refresh' => App\Http\Middleware\AuthenticateRefresh::class,
+    'json-response' => \App\Http\Middleware\JsonResponseOnly::class,
+    'must-guest' => App\Http\Middleware\MustGuest::class,
+    'guest' => App\Http\Middleware\Guest::class,
+    'guest-refresh' => App\Http\Middleware\GuestRefresh::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -91,8 +96,8 @@ $app->configure('app');
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
 /*

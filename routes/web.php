@@ -13,6 +13,28 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->group(['prefix' => '/guest', 'middleware' => ['json-response']], function () use ($router) {
+    $router->group(['middleware' => ['must-guest']], function () use ($router) {
+        $router->post('/logout', 'ApiAppController@logout');
+    });
+    $router->group(['middleware' => ['guest-refresh']], function () use ($router) {
+        $router->post('/refresh', 'ApiAppController@refresh');
+    });
+    $router->post('/auth', 'ApiAppController@auth');
+});
+
+$router->group(['middleware' => ['json-response', 'auth']], function () use ($router) {
+    $router->get('/user/profile', 'UserController@profile');
+});
+
+$router->group(['prefix' => '/user/auth', 'middleware' => ['json-response']], function () use ($router) {
+    $router->group(['middleware' => ['auth']], function () use ($router) {
+        $router->post('/logout', 'UserController@logout');
+    });
+    $router->group(['middleware' => ['auth-refresh']], function () use ($router) {
+        $router->post('/refresh', 'UserController@refresh');
+    });
+    $router->group(['middleware' => ['guest']], function () use ($router) {
+        $router->post('/login', 'UserController@login');
+    });
 });

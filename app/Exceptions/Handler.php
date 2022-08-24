@@ -49,6 +49,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($request->prefers('application/json') || $request->expectsJson()) {
+            $code = ($exception instanceof HttpException)?$exception->getStatusCode():500;
+            if($exception instanceof ValidationException) {
+                return buildErrorJson(400, __('app.invalid'), null, $exception->validator->getMessageBag());
+            } else if ($exception instanceof ModelNotFoundException) {
+                return buildJson(400, __('app.not_found'));
+            }
+            try {
+                return buildErrorJson($code, $exception->getMessage(), null, null, false, config('app.debug')?$exception->getTrace():null);
+            } catch(Exception $ignored) {
+                return parent::render($request, $exception);
+            }
+        }
         return parent::render($request, $exception);
     }
 }

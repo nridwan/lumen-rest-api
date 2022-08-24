@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class ExampleMiddleware
+class JsonResponseOnly
 {
     /**
      * Handle an incoming request.
@@ -15,6 +15,10 @@ class ExampleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if ($request->prefers('application/json') || $request->expectsJson())
+        {
+            return $next($request);
+        }
+        return abort(404);
     }
 }

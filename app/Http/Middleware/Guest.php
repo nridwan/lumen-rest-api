@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Authenticate
+class Guest
 {
     /**
      * The authentication guard factory instance.
@@ -41,7 +41,7 @@ class Authenticate
     {
         $header = $request->header('Authorization');
         $auth = $this->auth->guard($guard);
-        if (!$this->jwtUser->checkToken($this->jwtUser->parseToken($header), false)) {
+        if (!$this->jwtUser->maybeGuest($this->jwtUser->parseToken($header), false)) {
             throw new HttpException(401, 'Unauthorized.');
         }
         $user = $this->jwtUser->getUser();
