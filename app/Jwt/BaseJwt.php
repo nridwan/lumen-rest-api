@@ -37,7 +37,7 @@ class BaseJwt
         );
     }
 
-    public function parseToken(string $strToken): ?Plain
+    public function parseToken(?string $strToken): ?Plain
     {
         if(substr($strToken, 0, 6) != 'Bearer') return null;
         try {
